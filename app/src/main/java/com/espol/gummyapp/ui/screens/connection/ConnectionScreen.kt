@@ -41,10 +41,12 @@ fun ConnectionScreen(
     isBluetoothEnabled: Boolean,
     devices: List<BleDevice>,
     onToggleBluetooth: (Boolean) -> Unit,
+    onDeviceClick: (BleDevice) -> Unit,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onHistoryClick: () -> Unit
-) {
+)
+{
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -52,8 +54,6 @@ fun ConnectionScreen(
     ) {
 
         Column(modifier = Modifier.fillMaxSize()) {
-
-            /* -------- TOP BAR -------- */
 
             Row(
                 modifier = Modifier
@@ -83,10 +83,8 @@ fun ConnectionScreen(
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 color = GomiTextPrimary,
-                modifier = Modifier.padding(start = 16.dp, bottom = 20.dp)
+                modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 20.dp)
             )
-
-            /* -------- BLUETOOTH SWITCH -------- */
 
             Surface(
                 modifier = Modifier
@@ -123,40 +121,35 @@ fun ConnectionScreen(
                 }
             }
 
-            /* -------- INFO -------- */
-
             Row(
-                modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_info),
-                    contentDescription = null,
-                    tint = GomiTextPrimary,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Active el bluetooth y la ubicación para ver los juguetes disponibles",
-                    fontSize = 14.sp,
-                    color = GomiTextPrimary
-                )
+                if (!isBluetoothEnabled) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_info),
+                        contentDescription = null,
+                        tint = GomiTextPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Active el bluetooth y la ubicación para ver los juguetes disponibles",
+                        fontSize = 14.sp,
+                        color = GomiTextPrimary
+                    )
+                }
             }
 
-            /* -------- DEVICE LIST -------- */
-
-            Surface(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White
+                    .padding(16.dp)
+                    .background(Color.White, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
+                Column(modifier = Modifier.fillMaxSize()) {
 
                     Text(
                         text = "Juguetes disponibles",
@@ -169,7 +162,9 @@ fun ConnectionScreen(
                     when {
                         !isBluetoothEnabled -> {
                             Text(
-                                text = "Bluetooth o Ubicación desactivados, porfavor recuerde activarlos", fontSize = 14.sp, color = Color.Gray
+                                text = "Active el bluetooth para comenzar",
+                                fontSize = 14.sp,
+                                color = Color.Gray
                             )
                         }
 
@@ -184,15 +179,13 @@ fun ConnectionScreen(
                         else -> {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(bottom = 16.dp)
+                                contentPadding = PaddingValues(bottom = 12.dp)
                             ) {
                                 items(devices) { device ->
                                     BleDeviceItem(
-                                        deviceName = device.name,
-                                        deviceAddress = device.address,
-                                        onClick = {
-                                            // aquí conectaremos luego
-                                        })
+                                        device = device,
+                                        onClick = { onDeviceClick(device) }
+                                    )
                                 }
                             }
                         }
@@ -200,8 +193,6 @@ fun ConnectionScreen(
                 }
             }
         }
-
-        /* -------- BOTTOM BAR -------- */
 
         Row(
             modifier = Modifier
@@ -224,12 +215,10 @@ fun ConnectionScreen(
             )
 
             BottomItem(
-                icon = R.drawable.ic_bluetooth, label = "Conexión", selected = true, onClick = {})
+                icon = R.drawable.ic_bluetooth, label = "Conexión", selected = true, onClick = { })
         }
     }
 }
-
-/* -------- COMPONENTS -------- */
 
 @Composable
 fun BottomItem(
@@ -244,7 +233,10 @@ fun BottomItem(
             )
             .clickable { onClick() }, contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = label,
@@ -252,33 +244,71 @@ fun BottomItem(
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = label, fontSize = 12.sp, color = GomiTextPrimary)
+            Text(
+                text = label, fontSize = 12.sp, color = GomiTextPrimary
+            )
         }
     }
 }
 
 @Composable
 fun BleDeviceItem(
-    deviceName: String, deviceAddress: String, onClick: () -> Unit
+    device: BleDevice,
+    onClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .clickable { onClick() },
+            .clickable(enabled = device.state == DeviceConnectionState.IDLE) {
+                onClick()
+            },
         shape = RoundedCornerShape(14.dp),
         color = Color.White
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = deviceName,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = GomiTextPrimary
-            )
-            Text(
-                text = deviceAddress, fontSize = 12.sp, color = GomiTextPrimary.copy(alpha = 0.6f)
-            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = device.name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = GomiTextPrimary
+                    )
+                    Text(
+                        text = device.address,
+                        fontSize = 12.sp,
+                        color = GomiTextPrimary.copy(alpha = 0.6f)
+                    )
+                }
+
+                when (device.state) {
+                    DeviceConnectionState.CONNECTING -> {
+                        Text(
+                            text = "Conectando...",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+
+                    DeviceConnectionState.CONNECTED -> {
+                        Text(
+                            text = "Conectado",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = GomiPrimary
+                        )
+                    }
+
+                    else -> {}
+                }
+            }
         }
     }
 }
+

@@ -9,5 +9,5 @@ enum class DeviceConnectionState {
 data class BleDevice(
     val name: String,
     val address: String,
-    val state: UiConnectionState = UiConnectionState.IDLE
+    val state: DeviceConnectionState = DeviceConnectionState.IDLE
 )

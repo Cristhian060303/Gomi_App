@@ -3,9 +3,10 @@ package com.espol.gummyapp
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
+import android.bluetooth.BluetoothProfile
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.espol.gummyapp.ui.screens.connection.BleDevice
 import com.espol.gummyapp.ui.screens.connection.ConnectionScreen
+import com.espol.gummyapp.ui.screens.connection.DeviceConnectionState
 import com.espol.gummyapp.ui.screens.home.HomeScreen
 import com.espol.gummyapp.ui.screens.welcome.WelcomeScreen
 import com.espol.gummyapp.ui.theme.GummyAppTheme
@@ -54,7 +56,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableBluetoothLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
         setContent {
             GummyAppTheme {
@@ -81,6 +83,8 @@ class MainActivity : ComponentActivity() {
 fun GummyApp(
     onRequestEnableBluetooth: () -> Unit, onOpenLocationSettings: () -> Unit
 ) {
+
+
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
     val context = LocalContext.current
 
@@ -90,9 +94,70 @@ fun GummyApp(
 
     val discoveredDevices = remember { mutableStateListOf<BleDevice>() }
     var isScanning by remember { mutableStateOf(false) }
+    var isBluetoothEnabled by remember {
+        mutableStateOf(bluetoothAdapter?.isEnabled == true)
+    }
 
-    /* -------- PERMISOS -------- */
+    var bluetoothGatt by remember { mutableStateOf<BluetoothGatt?>(null) }
+    val gattCallback = remember {
+        object : BluetoothGattCallback() {
 
+            override fun onConnectionStateChange(
+                gatt: BluetoothGatt, status: Int, newState: Int
+            ) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    bluetoothGatt = gatt
+
+                    val index = discoveredDevices.indexOfFirst {
+                        it.address == gatt.device.address
+                    }
+
+                    if (index != -1) {
+                        discoveredDevices[index] = discoveredDevices[index].copy(
+                            state = DeviceConnectionState.CONNECTED
+                        )
+                    }
+                }
+
+                if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    bluetoothGatt?.close()
+                    bluetoothGatt = null
+
+                    val index = discoveredDevices.indexOfFirst {
+                        it.address == gatt.device.address
+                    }
+
+                    if (index != -1) {
+                        discoveredDevices[index] = discoveredDevices[index].copy(
+                            state = DeviceConnectionState.IDLE
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // Escucha cambios reales del Bluetooth del sistema
+    DisposableEffect(Unit) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(c: Context, intent: Intent) {
+                if (intent.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
+                    val state = intent.getIntExtra(
+                        BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR
+                    )
+                    isBluetoothEnabled = state == BluetoothAdapter.STATE_ON
+                }
+            }
+        }
+        context.registerReceiver(
+            receiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        )
+        onDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+
+    // Permisos
     val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(
             Manifest.permission.BLUETOOTH_SCAN,
@@ -110,7 +175,9 @@ fun GummyApp(
     var hasPermissions by remember {
         mutableStateOf(
             permissions.all {
-                ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context, it
+                ) == PackageManager.PERMISSION_GRANTED
             })
     }
 
@@ -124,59 +191,24 @@ fun GummyApp(
         if (!hasPermissions) permissionLauncher.launch(permissions)
     }
 
-    /* -------- ESTADO REAL BLUETOOTH -------- */
-
-    var isBluetoothEnabled by remember {
-        mutableStateOf(bluetoothAdapter?.isEnabled == true)
-    }
-
-    DisposableEffect(Unit) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(c: Context?, intent: Intent?) {
-                if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
-                    val state = intent.getIntExtra(
-                        BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR
-                    )
-                    isBluetoothEnabled = state == BluetoothAdapter.STATE_ON
-                }
-            }
-        }
-
-        context.registerReceiver(
-            receiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-        )
-
-        onDispose {
-            context.unregisterReceiver(receiver)
-        }
-    }
-
-    /* -------- BLE SCAN CALLBACK -------- */
-
+    // BLE Scan callback
     val scanCallback = remember {
-        object : ScanCallback() {
+        object : android.bluetooth.le.ScanCallback() {
             override fun onScanResult(
-                callbackType: Int, result: ScanResult
+                callbackType: Int, result: android.bluetooth.le.ScanResult
             ) {
                 val name = result.device.name ?: return
                 val address = result.device.address
 
                 if (discoveredDevices.none { it.address == address }) {
-                    discoveredDevices.add(
-                        BleDevice(
-                            name = name, address = address
-                        )
-                    )
+                    discoveredDevices.add(BleDevice(name, address))
                 }
             }
         }
     }
 
-    /* -------- CONTROL DE SCAN -------- */
-
-    LaunchedEffect(
-        currentScreen, isBluetoothEnabled, hasPermissions
-    ) {
+    // Control de escaneo
+    LaunchedEffect(currentScreen, isBluetoothEnabled, hasPermissions) {
         val shouldScan = currentScreen is Screen.DeviceScan && isBluetoothEnabled && hasPermissions
 
         if (shouldScan && !isScanning) {
@@ -191,22 +223,9 @@ fun GummyApp(
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            if (isScanning) {
-                scanner?.stopScan(scanCallback)
-            }
-        }
-    }
-
-    /* -------- UI -------- */
-
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = Color.White
-    ) {
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
         Crossfade(targetState = currentScreen, label = "") { screen ->
             when (screen) {
-
                 Screen.Welcome -> WelcomeScreen {
                     currentScreen = Screen.Home
                 }
@@ -215,12 +234,8 @@ fun GummyApp(
                     isBleConnected = isBluetoothEnabled,
                     onStartClick = {},
                     onHistoryClick = {},
-                    onConnectionClick = {
-                        currentScreen = Screen.DeviceScan
-                    },
-                    onBackClick = {
-                        currentScreen = Screen.Welcome
-                    })
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onBackClick = { currentScreen = Screen.Welcome })
 
                 Screen.DeviceScan -> ConnectionScreen(
                     isBluetoothEnabled = isBluetoothEnabled,
@@ -230,6 +245,28 @@ fun GummyApp(
                             onRequestEnableBluetooth()
                             onOpenLocationSettings()
                         }
+                    },
+                    onDeviceClick = { device ->
+
+                        // 1. SOLO permitimos Gomi
+                        if (device.name != "Gomi FADCOM_2025") return@ConnectionScreen
+
+                        val index = discoveredDevices.indexOfFirst {
+                            it.address == device.address
+                        }
+
+                        if (index == -1) return@ConnectionScreen
+
+                        // 2. Estado CONNECTING
+                        discoveredDevices[index] =
+                            discoveredDevices[index].copy(state = DeviceConnectionState.CONNECTING)
+
+                        // 3. Conexión BLE real
+                        val bluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
+
+                        bluetoothGatt = bluetoothDevice?.connectGatt(
+                            context, false, gattCallback
+                        )
                     },
                     onBackClick = { currentScreen = Screen.Home },
                     onHomeClick = { currentScreen = Screen.Home },
