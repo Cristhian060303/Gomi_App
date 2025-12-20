@@ -45,8 +45,7 @@ fun ConnectionScreen(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onHistoryClick: () -> Unit
-)
-{
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -183,9 +182,7 @@ fun ConnectionScreen(
                             ) {
                                 items(devices) { device ->
                                     BleDeviceItem(
-                                        device = device,
-                                        onClick = { onDeviceClick(device) }
-                                    )
+                                        device = device, onClick = { onDeviceClick(device) })
                                 }
                             }
                         }
@@ -253,8 +250,7 @@ fun BottomItem(
 
 @Composable
 fun BleDeviceItem(
-    device: BleDevice,
-    onClick: () -> Unit
+    device: BleDevice, onClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -289,6 +285,7 @@ fun BleDeviceItem(
                     DeviceConnectionState.CONNECTING -> {
                         Text("Conectando...", fontSize = 12.sp, color = Color.Gray)
                     }
+
                     DeviceConnectionState.CONNECTED -> {
                         Text(
                             "Conectado",
@@ -297,6 +294,7 @@ fun BleDeviceItem(
                             color = GomiPrimary
                         )
                     }
+
                     else -> {}
                 }
             }

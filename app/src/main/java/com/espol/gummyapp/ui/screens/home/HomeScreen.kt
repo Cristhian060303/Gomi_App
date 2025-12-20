@@ -3,11 +3,21 @@ package com.espol.gummyapp.ui.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,8 +60,7 @@ fun HomeScreen(
                 contentDescription = "Volver",
                 modifier = Modifier
                     .size(28.dp)
-                    .clickable { onBackClick() }
-            )
+                    .clickable { onBackClick() })
 
             Image(
                 painter = painterResource(id = R.drawable.ic_more_vert),
@@ -75,9 +84,7 @@ fun HomeScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Comenzar",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
+                    text = "Comenzar", fontSize = 18.sp, fontWeight = FontWeight.SemiBold
                 )
             }
         }
@@ -93,22 +100,15 @@ fun HomeScreen(
         ) {
 
             BottomItem(
-                icon = R.drawable.ic_home,
-                label = "Inicio",
-                onClick = {}
-            )
+                icon = R.drawable.ic_home, label = "Inicio", onClick = {})
 
             BottomItem(
-                icon = R.drawable.ic_history,
-                label = "Historial",
-                onClick = onHistoryClick
+                icon = R.drawable.ic_history, label = "Historial", onClick = onHistoryClick
             )
 
             Box {
                 BottomItem(
-                    icon = R.drawable.ic_bluetooth,
-                    label = "Conexión",
-                    onClick = onConnectionClick
+                    icon = R.drawable.ic_bluetooth, label = "Conexión", onClick = onConnectionClick
                 )
 
                 if (!isBleConnected) {
@@ -127,16 +127,13 @@ fun HomeScreen(
 
 @Composable
 fun BottomItem(
-    icon: Int,
-    label: String,
-    onClick: () -> Unit
+    icon: Int, label: String, onClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onClick() }
-            .padding(horizontal = 12.dp)
-    ) {
+            .padding(horizontal = 12.dp)) {
         Image(
             painter = painterResource(id = icon),
             contentDescription = label,
@@ -144,9 +141,7 @@ fun BottomItem(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = label,
-            fontSize = 12.sp,
-            color = GomiTextPrimary
+            text = label, fontSize = 12.sp, color = GomiTextPrimary
         )
     }
 }

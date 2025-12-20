@@ -17,15 +17,14 @@ fun WelcomeScreen(
     onContinue: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        delay(4000)
+        delay(2000)
         onContinue()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { onContinue() }
-    ) {
+            .clickable { onContinue() }) {
         Image(
             painter = painterResource(id = R.drawable.portada_gomi),
             contentDescription = "Portada Gomi App",

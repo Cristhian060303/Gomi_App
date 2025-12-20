@@ -262,36 +262,32 @@ fun GummyApp(
 
                             DeviceConnectionState.CONNECTED -> {
 
-                                discoveredDevices[index] =
-                                    discoveredDevices[index].copy(
-                                        state = DeviceConnectionState.CONNECTING
-                                    )
+                                discoveredDevices[index] = discoveredDevices[index].copy(
+                                    state = DeviceConnectionState.CONNECTING
+                                )
 
                                 bluetoothGatt?.disconnect()
                             }
 
                             DeviceConnectionState.IDLE -> {
-                                discoveredDevices[index] =
-                                    discoveredDevices[index].copy(
-                                        state = DeviceConnectionState.CONNECTING
-                                    )
+                                discoveredDevices[index] = discoveredDevices[index].copy(
+                                    state = DeviceConnectionState.CONNECTING
+                                )
 
                                 val bluetoothDevice =
                                     bluetoothAdapter?.getRemoteDevice(device.address)
 
                                 bluetoothGatt = bluetoothDevice?.connectGatt(
-                                    context,
-                                    false,
-                                    gattCallback
+                                    context, false, gattCallback
                                 )
                             }
+
                             DeviceConnectionState.CONNECTING -> {
                                 bluetoothGatt?.disconnect()
 
-                                discoveredDevices[index] =
-                                    discoveredDevices[index].copy(
-                                        state = DeviceConnectionState.IDLE
-                                    )
+                                discoveredDevices[index] = discoveredDevices[index].copy(
+                                    state = DeviceConnectionState.IDLE
+                                )
                             }
                         }
                     },

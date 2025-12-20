@@ -1,9 +1,7 @@
 package com.espol.gummyapp.ui.screens.connection
 
 enum class DeviceConnectionState {
-    IDLE,
-    CONNECTING,
-    CONNECTED
+    IDLE, CONNECTING, CONNECTED
 }
 
 data class BleDevice(
