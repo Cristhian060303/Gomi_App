@@ -221,6 +221,10 @@ fun GummyApp(
         }
     }
 
+    val isBleConnected = discoveredDevices.any {
+        it.state == DeviceConnectionState.CONNECTED
+    }
+
     Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
         Crossfade(targetState = currentScreen, label = "") { screen ->
             when (screen) {
@@ -229,7 +233,7 @@ fun GummyApp(
                 }
 
                 Screen.Home -> HomeScreen(
-                    isBleConnected = isBluetoothEnabled,
+                    isBleConnected = isBleConnected,
                     onStartClick = {},
                     onHistoryClick = {},
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
