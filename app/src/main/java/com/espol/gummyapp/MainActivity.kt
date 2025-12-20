@@ -84,7 +84,6 @@ fun GummyApp(
     onRequestEnableBluetooth: () -> Unit, onOpenLocationSettings: () -> Unit
 ) {
 
-
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
     val context = LocalContext.current
 
@@ -212,7 +211,6 @@ fun GummyApp(
         val shouldScan = currentScreen is Screen.DeviceScan && isBluetoothEnabled && hasPermissions
 
         if (shouldScan && !isScanning) {
-            discoveredDevices.clear()
             isScanning = true
             scanner?.startScan(scanCallback)
         }
@@ -248,7 +246,6 @@ fun GummyApp(
                     },
                     onDeviceClick = { device ->
 
-                        // 1. SOLO permitimos Gomi
                         if (device.name != "Gomi FADCOM_2025") return@ConnectionScreen
 
                         val index = discoveredDevices.indexOfFirst {
@@ -257,16 +254,42 @@ fun GummyApp(
 
                         if (index == -1) return@ConnectionScreen
 
-                        // 2. Estado CONNECTING
-                        discoveredDevices[index] =
-                            discoveredDevices[index].copy(state = DeviceConnectionState.CONNECTING)
+                        when (device.state) {
 
-                        // 3. Conexión BLE real
-                        val bluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
+                            DeviceConnectionState.CONNECTED -> {
 
-                        bluetoothGatt = bluetoothDevice?.connectGatt(
-                            context, false, gattCallback
-                        )
+                                discoveredDevices[index] =
+                                    discoveredDevices[index].copy(
+                                        state = DeviceConnectionState.CONNECTING
+                                    )
+
+                                bluetoothGatt?.disconnect()
+                            }
+
+                            DeviceConnectionState.IDLE -> {
+                                discoveredDevices[index] =
+                                    discoveredDevices[index].copy(
+                                        state = DeviceConnectionState.CONNECTING
+                                    )
+
+                                val bluetoothDevice =
+                                    bluetoothAdapter?.getRemoteDevice(device.address)
+
+                                bluetoothGatt = bluetoothDevice?.connectGatt(
+                                    context,
+                                    false,
+                                    gattCallback
+                                )
+                            }
+                            DeviceConnectionState.CONNECTING -> {
+                                bluetoothGatt?.disconnect()
+
+                                discoveredDevices[index] =
+                                    discoveredDevices[index].copy(
+                                        state = DeviceConnectionState.IDLE
+                                    )
+                            }
+                        }
                     },
                     onBackClick = { currentScreen = Screen.Home },
                     onHomeClick = { currentScreen = Screen.Home },

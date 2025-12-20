@@ -260,9 +260,7 @@ fun BleDeviceItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .clickable(enabled = device.state == DeviceConnectionState.IDLE) {
-                onClick()
-            },
+            .clickable { onClick() },
         shape = RoundedCornerShape(14.dp),
         color = Color.White
     ) {
@@ -289,22 +287,16 @@ fun BleDeviceItem(
 
                 when (device.state) {
                     DeviceConnectionState.CONNECTING -> {
-                        Text(
-                            text = "Conectando...",
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
+                        Text("Conectando...", fontSize = 12.sp, color = Color.Gray)
                     }
-
                     DeviceConnectionState.CONNECTED -> {
                         Text(
-                            text = "Conectado",
+                            "Conectado",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = GomiPrimary
                         )
                     }
-
                     else -> {}
                 }
             }
