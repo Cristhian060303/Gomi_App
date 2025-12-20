@@ -136,6 +136,25 @@ fun GummyApp(
         }
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            bluetoothGatt?.let { gatt ->
+                try {
+                    gatt.disconnect()
+                    gatt.close()
+                } catch (_: Exception) {
+                }
+                bluetoothGatt = null
+            }
+
+            for (i in discoveredDevices.indices) {
+                discoveredDevices[i] = discoveredDevices[i].copy(
+                    state = DeviceConnectionState.IDLE
+                )
+            }
+        }
+    }
+
     // Escucha cambios reales del Bluetooth del sistema
     DisposableEffect(Unit) {
         val receiver = object : BroadcastReceiver() {
