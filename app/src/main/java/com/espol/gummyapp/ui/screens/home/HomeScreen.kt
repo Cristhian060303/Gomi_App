@@ -18,8 +18,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +33,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.espol.gummyapp.R
+import com.espol.gummyapp.ui.components.SideMenuContent
 import com.espol.gummyapp.ui.theme.GomiTextPrimary
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -37,88 +43,111 @@ fun HomeScreen(
     onStartClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onConnectionClick: () -> Unit,
+    onCreditsClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-        Image(
-            painter = painterResource(id = R.drawable.home_background),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = "Volver",
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable { onBackClick() })
+    ModalNavigationDrawer(
+        drawerState = drawerState, drawerContent = {
+            SideMenuContent(
+                onHelpClick = { /* TODO */ },
+                onCreditsClick = onCreditsClick,
+                onCloseClick = { /* cerrar app */ })
+        }, gesturesEnabled = true
+    ) {
+
+
+        Box(modifier = Modifier.fillMaxSize()) {
 
             Image(
-                painter = painterResource(id = R.drawable.ic_more_vert),
-                contentDescription = "Menú",
-                modifier = Modifier.size(28.dp)
+                painter = painterResource(id = R.drawable.home_background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 90.dp),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = onStartClick,
+            Row(
                 modifier = Modifier
-                    .width(220.dp)
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.TopCenter),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Comenzar", fontSize = 18.sp, fontWeight = FontWeight.SemiBold
-                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = "Volver",
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable { onBackClick() })
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_more_vert),
+                    contentDescription = "Menú",
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable {
+                            scope.launch {
+                                drawerState.open()
+                            }
+                        })
             }
-        }
 
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 90.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    onClick = onStartClick,
+                    modifier = Modifier
+                        .width(220.dp)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        text = "Comenzar", fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
 
-            BottomItem(
-                icon = R.drawable.ic_home, label = "Inicio", onClick = {})
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            BottomItem(
-                icon = R.drawable.ic_history, label = "Historial", onClick = onHistoryClick
-            )
-
-            Box {
                 BottomItem(
-                    icon = R.drawable.ic_bluetooth, label = "Conexión", onClick = onConnectionClick
+                    icon = R.drawable.ic_home, label = "Inicio", onClick = {})
+
+                BottomItem(
+                    icon = R.drawable.ic_history, label = "Historial", onClick = onHistoryClick
                 )
 
-                if (!isBleConnected) {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .background(Color.Red, CircleShape)
-                            .align(Alignment.TopEnd)
-                            .offset(x = (-4).dp, y = 4.dp)
+                Box {
+                    BottomItem(
+                        icon = R.drawable.ic_bluetooth,
+                        label = "Conexión",
+                        onClick = onConnectionClick
                     )
+
+                    if (!isBleConnected) {
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .background(Color.Red, CircleShape)
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-4).dp, y = 4.dp)
+                        )
+                    }
                 }
             }
         }

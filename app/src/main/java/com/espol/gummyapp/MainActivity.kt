@@ -38,6 +38,7 @@ import androidx.core.content.ContextCompat
 import com.espol.gummyapp.ui.screens.connection.BleDevice
 import com.espol.gummyapp.ui.screens.connection.ConnectionScreen
 import com.espol.gummyapp.ui.screens.connection.DeviceConnectionState
+import com.espol.gummyapp.ui.screens.credits.CreditsScreen
 import com.espol.gummyapp.ui.screens.home.HomeScreen
 import com.espol.gummyapp.ui.screens.welcome.WelcomeScreen
 import com.espol.gummyapp.ui.theme.GummyAppTheme
@@ -46,6 +47,8 @@ sealed class Screen {
     object Welcome : Screen()
     object Home : Screen()
     object DeviceScan : Screen()
+
+    object Credits : Screen()
 }
 
 class MainActivity : ComponentActivity() {
@@ -253,10 +256,16 @@ fun GummyApp(
 
                 Screen.Home -> HomeScreen(
                     isBleConnected = isBleConnected,
-                    onStartClick = {},
-                    onHistoryClick = {},
+                    onStartClick = { },
+                    onHistoryClick = { },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
-                    onBackClick = { currentScreen = Screen.Welcome })
+                    onCreditsClick = { currentScreen = Screen.Credits },
+                    onBackClick = { currentScreen = Screen.Welcome }
+                )
+
+                Screen.Credits -> CreditsScreen {
+                    currentScreen = Screen.Home
+                }
 
                 Screen.DeviceScan -> ConnectionScreen(
                     isBluetoothEnabled = isBluetoothEnabled,
@@ -310,6 +319,7 @@ fun GummyApp(
                             }
                         }
                     },
+                    onCreditsClick = { currentScreen = Screen.Credits },
                     onBackClick = { currentScreen = Screen.Home },
                     onHomeClick = { currentScreen = Screen.Home },
                     onHistoryClick = {})
