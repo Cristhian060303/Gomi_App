@@ -42,6 +42,8 @@ import com.espol.gummyapp.ui.screens.connection.DeviceConnectionState
 import com.espol.gummyapp.ui.screens.credits.CreditsScreen
 import com.espol.gummyapp.ui.screens.game.GameModeScreen
 import com.espol.gummyapp.ui.screens.home.HomeScreen
+import com.espol.gummyapp.ui.screens.story.StoryColorsScreen
+import com.espol.gummyapp.ui.screens.story.StorySelectionScreen
 import com.espol.gummyapp.ui.screens.welcome.WelcomeScreen
 import com.espol.gummyapp.ui.theme.GummyAppTheme
 
@@ -51,6 +53,8 @@ sealed class Screen {
     object DeviceScan : Screen()
     object Credits : Screen()
     object GameMode : Screen()
+    object StorySelection : Screen()
+    object StoryColors : Screen()
 }
 
 class MainActivity : ComponentActivity() {
@@ -283,7 +287,7 @@ fun GummyApp(
                             currentScreen = Screen.GameMode
                         }
                     },
-                    onHistoryClick = { },
+                    onRecordClick = { },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onCreditsClick = { currentScreen = Screen.Credits },
                     onCloseApp = { closeApp() },
@@ -349,11 +353,11 @@ fun GummyApp(
                     onBackClick = { currentScreen = Screen.Home },
                     onHomeClick = { currentScreen = Screen.Home },
                     onCloseApp = { closeApp() },
-                    onHistoryClick = {})
+                    onRecordClick = {})
 
                 Screen.GameMode -> GameModeScreen(
                     onHistoryClick = {
-                    // más adelante: pantalla de historial del juego
+                    currentScreen = Screen.StorySelection
                 },
                     onMemoryClick = {
                         // más adelante: modo memoria
@@ -371,7 +375,31 @@ fun GummyApp(
                         currentScreen = Screen.Home
                     },
                     onCreditsClick = { currentScreen = Screen.Credits },
+                    onRecordClick = { },
                     onCloseApp = { closeApp() })
+
+                Screen.StorySelection -> StorySelectionScreen(
+                    isBleConnected = isDeviceConnected,
+                    onColorsClick = { currentScreen = Screen.StoryColors },
+                    onFormsClick = { /* siguiente pantalla */ },
+                    onCombinedClick = { /* siguiente pantalla */ },
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onHistoryClick = { },
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onCreditsClick = { currentScreen = Screen.Credits },
+                    onCloseApp = { closeApp() },
+                    onBackClick = { currentScreen = Screen.GameMode })
+
+                Screen.StoryColors -> StoryColorsScreen(
+                    isBleConnected = isDeviceConnected,
+                    onActivatePieces = {},
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onRecordClick = {},
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onCreditsClick = { currentScreen = Screen.Credits },
+                    onCloseApp = { closeApp() },
+                    onBackClick = { currentScreen = Screen.StorySelection })
+
             }
         }
     }

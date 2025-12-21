@@ -43,7 +43,8 @@ fun GameModeScreen(
     onConnectionClick: () -> Unit,
     onCreditsClick: () -> Unit,
     onCloseApp: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onRecordClick: () -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -105,7 +106,6 @@ fun GameModeScreen(
                 ModeButton("Libre", onFreeClick)
             }
 
-            // 🔻 Barra inferior
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -121,7 +121,7 @@ fun GameModeScreen(
                 )
 
                 BottomItem(
-                    icon = R.drawable.ic_history, label = "Historial", onClick = onHistoryClick
+                    icon = R.drawable.ic_history, label = "Historial", onClick = onRecordClick
                 )
 
                 BottomItem(

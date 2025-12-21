@@ -52,7 +52,7 @@ fun ConnectionScreen(
     onHomeClick: () -> Unit,
     onCreditsClick: () -> Unit,
     onCloseApp: () -> Unit,
-    onHistoryClick: () -> Unit
+    onRecordClick: () -> Unit
 ) {
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -236,7 +236,7 @@ fun ConnectionScreen(
                     icon = R.drawable.ic_history,
                     label = "Historial",
                     selected = false,
-                    onClick = onHistoryClick
+                    onClick = onRecordClick
                 )
 
                 BottomItem(

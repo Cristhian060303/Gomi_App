@@ -41,11 +41,11 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     isBleConnected: Boolean,
     onStartClick: () -> Unit,
-    onHistoryClick: () -> Unit,
     onConnectionClick: () -> Unit,
     onCreditsClick: () -> Unit,
     onCloseApp: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onRecordClick: () -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -131,7 +131,7 @@ fun HomeScreen(
                     icon = R.drawable.ic_home, label = "Inicio", onClick = {})
 
                 BottomItem(
-                    icon = R.drawable.ic_history, label = "Historial", onClick = onHistoryClick
+                    icon = R.drawable.ic_history, label = "Historial", onClick = onRecordClick
                 )
 
                 Box {
