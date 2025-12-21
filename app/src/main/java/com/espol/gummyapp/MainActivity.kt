@@ -79,6 +79,7 @@ class MainActivity : ComponentActivity() {
     private fun openLocationSettings() {
         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
     }
+
 }
 
 @SuppressLint("MissingPermission")
@@ -86,6 +87,7 @@ class MainActivity : ComponentActivity() {
 fun GummyApp(
     onRequestEnableBluetooth: () -> Unit, onOpenLocationSettings: () -> Unit
 ) {
+
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
     val context = LocalContext.current
@@ -137,6 +139,14 @@ fun GummyApp(
                 }
             }
         }
+    }
+
+    fun closeApp() {
+        bluetoothGatt?.disconnect()
+        bluetoothGatt?.close()
+        bluetoothGatt = null
+
+        (context as? ComponentActivity)?.finish()
     }
 
     DisposableEffect(Unit) {
@@ -260,8 +270,8 @@ fun GummyApp(
                     onHistoryClick = { },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onCreditsClick = { currentScreen = Screen.Credits },
-                    onBackClick = { currentScreen = Screen.Welcome }
-                )
+                    onCloseApp = { closeApp() },
+                    onBackClick = { currentScreen = Screen.Welcome })
 
                 Screen.Credits -> CreditsScreen {
                     currentScreen = Screen.Home
@@ -322,6 +332,7 @@ fun GummyApp(
                     onCreditsClick = { currentScreen = Screen.Credits },
                     onBackClick = { currentScreen = Screen.Home },
                     onHomeClick = { currentScreen = Screen.Home },
+                    onCloseApp = { closeApp() },
                     onHistoryClick = {})
             }
         }

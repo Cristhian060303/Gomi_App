@@ -44,6 +44,7 @@ fun HomeScreen(
     onHistoryClick: () -> Unit,
     onConnectionClick: () -> Unit,
     onCreditsClick: () -> Unit,
+    onCloseApp: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -54,7 +55,8 @@ fun HomeScreen(
             SideMenuContent(
                 onHelpClick = { /* TODO */ },
                 onCreditsClick = onCreditsClick,
-                onCloseClick = { /* cerrar app */ })
+                onCloseClick = onCloseApp
+            )
         }, gesturesEnabled = true
     ) {
 

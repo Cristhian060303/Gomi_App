@@ -51,6 +51,7 @@ fun ConnectionScreen(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onCreditsClick: () -> Unit,
+    onCloseApp: () -> Unit,
     onHistoryClick: () -> Unit
 ) {
 
@@ -59,7 +60,11 @@ fun ConnectionScreen(
 
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
-            SideMenuContent(onHelpClick = { }, onCreditsClick = onCreditsClick, onCloseClick = { })
+            SideMenuContent(
+                onHelpClick = { },
+                onCreditsClick = onCreditsClick,
+                onCloseClick = onCloseApp
+            )
         }) {
 
         Box(
