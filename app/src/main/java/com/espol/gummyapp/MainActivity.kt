@@ -15,6 +15,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -39,6 +40,7 @@ import com.espol.gummyapp.ui.screens.connection.BleDevice
 import com.espol.gummyapp.ui.screens.connection.ConnectionScreen
 import com.espol.gummyapp.ui.screens.connection.DeviceConnectionState
 import com.espol.gummyapp.ui.screens.credits.CreditsScreen
+import com.espol.gummyapp.ui.screens.game.GameModeScreen
 import com.espol.gummyapp.ui.screens.home.HomeScreen
 import com.espol.gummyapp.ui.screens.welcome.WelcomeScreen
 import com.espol.gummyapp.ui.theme.GummyAppTheme
@@ -47,8 +49,8 @@ sealed class Screen {
     object Welcome : Screen()
     object Home : Screen()
     object DeviceScan : Screen()
-
     object Credits : Screen()
+    object GameMode : Screen()
 }
 
 class MainActivity : ComponentActivity() {
@@ -88,7 +90,6 @@ fun GummyApp(
     onRequestEnableBluetooth: () -> Unit, onOpenLocationSettings: () -> Unit
 ) {
 
-
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
     val context = LocalContext.current
 
@@ -101,6 +102,12 @@ fun GummyApp(
     var isBluetoothEnabled by remember {
         mutableStateOf(bluetoothAdapter?.isEnabled == true)
     }
+
+    discoveredDevices.any {
+        it.name == "Gomi FADCOM_2025" && it.state == DeviceConnectionState.CONNECTED
+    }
+
+    var isDeviceConnected by remember { mutableStateOf(false) }
 
     var bluetoothGatt by remember { mutableStateOf<BluetoothGatt?>(null) }
     val gattCallback = remember {
@@ -120,6 +127,7 @@ fun GummyApp(
                         discoveredDevices[index] = discoveredDevices[index].copy(
                             state = DeviceConnectionState.CONNECTED
                         )
+                        isDeviceConnected = true
                     }
                 }
 
@@ -136,6 +144,8 @@ fun GummyApp(
                             state = DeviceConnectionState.IDLE
                         )
                     }
+                    isDeviceConnected = false
+                    currentScreen = Screen.Home
                 }
             }
         }
@@ -253,10 +263,6 @@ fun GummyApp(
         }
     }
 
-    val isBleConnected = discoveredDevices.any {
-        it.state == DeviceConnectionState.CONNECTED
-    }
-
     Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
         Crossfade(targetState = currentScreen, label = "") { screen ->
             when (screen) {
@@ -265,8 +271,18 @@ fun GummyApp(
                 }
 
                 Screen.Home -> HomeScreen(
-                    isBleConnected = isBleConnected,
-                    onStartClick = { },
+                    isBleConnected = isDeviceConnected,
+                    onStartClick = {
+                        if (!isDeviceConnected) {
+                            Toast.makeText(
+                                context,
+                                "Debes conectarte al juguete para comenzar",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            currentScreen = Screen.GameMode
+                        }
+                    },
                     onHistoryClick = { },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onCreditsClick = { currentScreen = Screen.Credits },
@@ -334,6 +350,28 @@ fun GummyApp(
                     onHomeClick = { currentScreen = Screen.Home },
                     onCloseApp = { closeApp() },
                     onHistoryClick = {})
+
+                Screen.GameMode -> GameModeScreen(
+                    onHistoryClick = {
+                    // más adelante: pantalla de historial del juego
+                },
+                    onMemoryClick = {
+                        // más adelante: modo memoria
+                    },
+                    onFreeClick = {
+                        // más adelante: modo libre
+                    },
+                    onHomeClick = {
+                        currentScreen = Screen.Home
+                    },
+                    onConnectionClick = {
+                        currentScreen = Screen.DeviceScan
+                    },
+                    onBackClick = {
+                        currentScreen = Screen.Home
+                    },
+                    onCreditsClick = { currentScreen = Screen.Credits },
+                    onCloseApp = { closeApp() })
             }
         }
     }
