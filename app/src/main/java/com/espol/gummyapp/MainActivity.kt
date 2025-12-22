@@ -38,11 +38,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import com.espol.gummyapp.ui.history.HistoryRecord
+import com.espol.gummyapp.ui.history.HistoryStorage
 import com.espol.gummyapp.ui.screens.connection.BleDevice
 import com.espol.gummyapp.ui.screens.connection.ConnectionScreen
 import com.espol.gummyapp.ui.screens.connection.DeviceConnectionState
 import com.espol.gummyapp.ui.screens.credits.CreditsScreen
 import com.espol.gummyapp.ui.screens.game.GameModeScreen
+import com.espol.gummyapp.ui.screens.history.HistoryDetailScreen
+import com.espol.gummyapp.ui.screens.history.HistoryListScreen
 import com.espol.gummyapp.ui.screens.home.HomeScreen
 import com.espol.gummyapp.ui.screens.story.StoryColorsScreen
 import com.espol.gummyapp.ui.screens.story.StoryCompletedScreen
@@ -67,10 +71,12 @@ sealed class Screen {
     object StorySelection : Screen()
     object StoryColors : Screen()
     data class StoryCompleted(
-        val modeName: String,
-        val totalErrors: Int,
-        val totalTimeSeconds: Int
+        val modeName: String, val totalErrors: Int, val totalTimeSeconds: Int
     ) : Screen()
+
+    object HistoryList : Screen()
+    data class HistoryDetail(val record: HistoryRecord) : Screen()
+
 }
 
 class MainActivity : ComponentActivity() {
@@ -362,7 +368,7 @@ fun GummyApp(
                             currentScreen = Screen.GameMode
                         }
                     },
-                    onRecordClick = { },
+                    onRecordClick = { currentScreen = Screen.HistoryList},
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onCreditsClick = { currentScreen = Screen.Credits },
                     onCloseApp = { closeApp() },
@@ -428,7 +434,7 @@ fun GummyApp(
                     onBackClick = { currentScreen = Screen.Home },
                     onHomeClick = { currentScreen = Screen.Home },
                     onCloseApp = { closeApp() },
-                    onRecordClick = {})
+                    onRecordClick = { currentScreen = Screen.HistoryList})
 
                 Screen.GameMode -> GameModeScreen(
                     onHistoryClick = {
@@ -450,7 +456,7 @@ fun GummyApp(
                         currentScreen = Screen.Home
                     },
                     onCreditsClick = { currentScreen = Screen.Credits },
-                    onRecordClick = { },
+                    onRecordClick = { currentScreen = Screen.HistoryList},
                     onCloseApp = { closeApp() })
 
                 Screen.StorySelection -> StorySelectionScreen(
@@ -459,7 +465,7 @@ fun GummyApp(
                     onFormsClick = { /* siguiente pantalla */ },
                     onCombinedClick = { /* siguiente pantalla */ },
                     onHomeClick = { currentScreen = Screen.Home },
-                    onHistoryClick = { },
+                    onRecordClick = { currentScreen = Screen.HistoryList},
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onCreditsClick = { currentScreen = Screen.Credits },
                     onCloseApp = { closeApp() },
@@ -472,19 +478,25 @@ fun GummyApp(
                         sendColorToEsp32(color)
                     },
                     onStoryCompleted = { modeName, totalErrors, totalTime ->
-
-                        lastStoryMode = modeName
-                        lastStoryErrors = totalErrors
-                        lastStoryTime = totalTime
+                        HistoryStorage.saveRecord(
+                            context = context,
+                            record = HistoryRecord(
+                                mode = modeName,
+                                dateMillis = System.currentTimeMillis(),
+                                durationSeconds = totalTime,
+                                errors = totalErrors
+                            )
+                        )
 
                         currentScreen = Screen.StoryCompleted(
                             modeName = modeName,
                             totalErrors = totalErrors,
                             totalTimeSeconds = totalTime
                         )
-                    },
+                    }
+                    ,
                     onHomeClick = { currentScreen = Screen.Home },
-                    onRecordClick = {},
+                    onRecordClick = { currentScreen = Screen.HistoryList},
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onBackClick = { currentScreen = Screen.StorySelection })
 
@@ -493,9 +505,28 @@ fun GummyApp(
                     totalTimeSeconds = screen.totalTimeSeconds,
                     totalErrors = screen.totalErrors,
                     onHomeClick = { currentScreen = Screen.Home },
-                    onRecordClick = {},
+                    onRecordClick = { currentScreen = Screen.HistoryList},
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
                     onBackClick = { currentScreen = Screen.Home })
+
+                Screen.HistoryList -> HistoryListScreen(
+                    isBleConnected = isDeviceConnected,
+                    onItemClick = { record ->
+                        currentScreen = Screen.HistoryDetail(record)
+                    },
+                    onBackClick = { currentScreen = Screen.Home },
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onRecordClick = { currentScreen = Screen.HistoryList},
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onCreditsClick = { currentScreen = Screen.Credits },
+                    onCloseApp = { closeApp() })
+
+                is Screen.HistoryDetail -> HistoryDetailScreen(
+                    record = screen.record,
+                    onBackClick = { currentScreen = Screen.HistoryList },
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onConnectionClick = { currentScreen = Screen.DeviceScan }
+                )
 
             }
         }

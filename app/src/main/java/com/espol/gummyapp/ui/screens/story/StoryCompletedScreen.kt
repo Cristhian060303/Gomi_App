@@ -35,19 +35,6 @@ fun StoryCompletedScreen(
     onConnectionClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        HistoryStorage.saveRecord(
-            context = context,
-            record = HistoryRecord(
-                mode = modeName,
-                dateMillis = System.currentTimeMillis(),
-                durationSeconds = totalTimeSeconds,
-                errors = totalErrors
-            )
-        )
-    }
 
     Box(
         modifier = Modifier
@@ -128,7 +115,7 @@ fun StoryCompletedScreen(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        text = "Volver al menú",
+                        text = "Volver al inicio",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold
                     )

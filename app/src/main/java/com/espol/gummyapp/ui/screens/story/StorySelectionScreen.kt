@@ -45,7 +45,7 @@ fun StorySelectionScreen(
     onFormsClick: () -> Unit,
     onCombinedClick: () -> Unit,
     onHomeClick: () -> Unit,
-    onHistoryClick: () -> Unit,
+    onRecordClick: () -> Unit,
     onConnectionClick: () -> Unit,
     onCreditsClick: () -> Unit,
     onCloseApp: () -> Unit,
@@ -175,7 +175,7 @@ fun StorySelectionScreen(
                         BottomItem(
                             icon = R.drawable.ic_history,
                             label = "Historial",
-                            onClick = onHistoryClick
+                            onClick = onRecordClick
                         )
 
                         Box {

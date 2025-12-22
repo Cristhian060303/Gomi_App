@@ -64,6 +64,13 @@ fun StoryColorsScreen(
     var isCorrect by remember { mutableStateOf<Boolean?>(null) }
     var errorCount by remember { mutableStateOf(0) }
 
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(1000)
+            elapsedTime++
+        }
+    }
+
     LaunchedEffect(bleResponse) {
         if (!showDialog || !isLoading) return@LaunchedEffect
         if (bleResponse == null) return@LaunchedEffect
