@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.BroadcastReceiver
@@ -43,9 +45,18 @@ import com.espol.gummyapp.ui.screens.credits.CreditsScreen
 import com.espol.gummyapp.ui.screens.game.GameModeScreen
 import com.espol.gummyapp.ui.screens.home.HomeScreen
 import com.espol.gummyapp.ui.screens.story.StoryColorsScreen
+import com.espol.gummyapp.ui.screens.story.StoryCompletedScreen
 import com.espol.gummyapp.ui.screens.story.StorySelectionScreen
 import com.espol.gummyapp.ui.screens.welcome.WelcomeScreen
 import com.espol.gummyapp.ui.theme.GummyAppTheme
+import java.util.UUID
+
+// --- CONFIGURACION BLE ---
+val SERVICE_UUID: UUID = UUID.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+
+val CHARACTERISTIC_WRITE_UUID: UUID = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
+
+val CHARACTERISTIC_NOTIFY_UUID: UUID = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
 
 sealed class Screen {
     object Welcome : Screen()
@@ -55,6 +66,11 @@ sealed class Screen {
     object GameMode : Screen()
     object StorySelection : Screen()
     object StoryColors : Screen()
+    data class StoryCompleted(
+        val modeName: String,
+        val totalErrors: Int,
+        val totalTimeSeconds: Int
+    ) : Screen()
 }
 
 class MainActivity : ComponentActivity() {
@@ -93,6 +109,21 @@ class MainActivity : ComponentActivity() {
 fun GummyApp(
     onRequestEnableBluetooth: () -> Unit, onOpenLocationSettings: () -> Unit
 ) {
+    var lastStoryErrors by remember { mutableStateOf(0) }
+    var lastStoryTime by remember { mutableStateOf(0) }
+    var lastStoryMode by remember { mutableStateOf("") }
+
+    // --- ESTADO BLE ---
+    var bluetoothGatt by remember { mutableStateOf<BluetoothGatt?>(null) }
+    var bleResponse by remember { mutableStateOf<String?>(null) }
+
+    // Características BLE
+    var writeCharacteristic by remember {
+        mutableStateOf<BluetoothGattCharacteristic?>(null)
+    }
+    var notifyCharacteristic by remember {
+        mutableStateOf<BluetoothGattCharacteristic?>(null)
+    }
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
     val context = LocalContext.current
@@ -113,7 +144,6 @@ fun GummyApp(
 
     var isDeviceConnected by remember { mutableStateOf(false) }
 
-    var bluetoothGatt by remember { mutableStateOf<BluetoothGatt?>(null) }
     val gattCallback = remember {
         object : BluetoothGattCallback() {
 
@@ -133,6 +163,7 @@ fun GummyApp(
                         )
                         isDeviceConnected = true
                     }
+                    gatt.discoverServices()
                 }
 
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -152,6 +183,50 @@ fun GummyApp(
                     currentScreen = Screen.Home
                 }
             }
+
+            override fun onServicesDiscovered(
+                gatt: BluetoothGatt, status: Int
+            ) {
+                val service = gatt.getService(SERVICE_UUID) ?: return
+
+                writeCharacteristic = service.getCharacteristic(CHARACTERISTIC_WRITE_UUID)
+
+                notifyCharacteristic = service.getCharacteristic(CHARACTERISTIC_NOTIFY_UUID)
+
+                gatt.setCharacteristicNotification(notifyCharacteristic, true)
+
+                val descriptor = notifyCharacteristic?.getDescriptor(
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+                )
+
+                descriptor?.let {
+                    it.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                    gatt.writeDescriptor(it)
+                }
+            }
+
+            override fun onCharacteristicChanged(
+                gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
+            ) {
+                val message = characteristic.value.toString(Charsets.UTF_8).trim()
+
+                bleResponse = message
+            }
+        }
+    }
+
+    fun sendColorToEsp32(color: String) {
+        if (writeCharacteristic == null || bluetoothGatt == null) {
+            Toast.makeText(
+                context, "BLE no listo aún", Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        bleResponse = null
+        writeCharacteristic?.let {
+            it.value = color.toByteArray()
+            bluetoothGatt?.writeCharacteristic(it)
         }
     }
 
@@ -392,13 +467,35 @@ fun GummyApp(
 
                 Screen.StoryColors -> StoryColorsScreen(
                     isBleConnected = isDeviceConnected,
-                    onActivatePieces = {},
+                    bleResponse = bleResponse,
+                    onActivatePieces = { color ->
+                        sendColorToEsp32(color)
+                    },
+                    onStoryCompleted = { modeName, totalErrors, totalTime ->
+
+                        lastStoryMode = modeName
+                        lastStoryErrors = totalErrors
+                        lastStoryTime = totalTime
+
+                        currentScreen = Screen.StoryCompleted(
+                            modeName = modeName,
+                            totalErrors = totalErrors,
+                            totalTimeSeconds = totalTime
+                        )
+                    },
                     onHomeClick = { currentScreen = Screen.Home },
                     onRecordClick = {},
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
-                    onCreditsClick = { currentScreen = Screen.Credits },
-                    onCloseApp = { closeApp() },
                     onBackClick = { currentScreen = Screen.StorySelection })
+
+                is Screen.StoryCompleted -> StoryCompletedScreen(
+                    modeName = screen.modeName,
+                    totalTimeSeconds = screen.totalTimeSeconds,
+                    totalErrors = screen.totalErrors,
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onRecordClick = {},
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onBackClick = { currentScreen = Screen.Home })
 
             }
         }
