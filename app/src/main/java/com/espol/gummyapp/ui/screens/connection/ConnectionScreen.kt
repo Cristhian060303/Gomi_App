@@ -93,6 +93,7 @@ fun ConnectionScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_more_vert),
                         contentDescription = "Menú",
+                        tint = GomiTextPrimary,
                         modifier = Modifier
                             .size(28.dp)
                             .clickable {

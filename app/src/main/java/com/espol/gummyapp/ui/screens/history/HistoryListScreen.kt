@@ -90,7 +90,7 @@ fun HistoryListScreen(
 
             Column(modifier = Modifier.fillMaxSize()) {
 
-                /* 🔝 Barra superior */
+                /* Barra superior */
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -158,7 +158,7 @@ fun HistoryListScreen(
                     }
                 }
 
-                /* 🔻 Bottom bar */
+                /* Bottom bar */
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -283,8 +283,6 @@ fun HistoryDayGroup(
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
-
-        // ⬅️ COLUMNA DEL DÍA + LÍNEA
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(32.dp)
         ) {
@@ -305,7 +303,7 @@ fun HistoryDayGroup(
 
         Spacer(Modifier.width(12.dp))
 
-        // ➡️ REGISTROS
+        // REGISTROS
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing), modifier = Modifier.weight(1f)
         ) {
