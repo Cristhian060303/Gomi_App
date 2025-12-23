@@ -47,9 +47,7 @@ fun StoryColorsScreen(
     bleResponse: String?,
     onActivatePieces: (String) -> Unit,
     onStoryCompleted: (
-        modeName: String,
-        totalErrors: Int,
-        totalTimeSeconds: Int
+        modeName: String, totalErrors: Int, totalTimeSeconds: Int
     ) -> Unit,
     onHomeClick: () -> Unit,
     onRecordClick: () -> Unit,
@@ -279,9 +277,7 @@ fun StoryColorsScreen(
                                     currentStep++
                                 } else {
                                     onStoryCompleted(
-                                        "Historia Colores",
-                                        errorCount,
-                                        elapsedTime
+                                        "Historia Colores", errorCount, elapsedTime
                                     )
                                 }
                             }) {
@@ -319,7 +315,7 @@ fun StoryColorsScreen(
 
 
 @Composable
-private fun DividerGomi() {
+fun DividerGomi() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -329,7 +325,7 @@ private fun DividerGomi() {
 }
 
 @Composable
-private fun ProgressBarPlaceholder(currentStep: Int) {
+fun ProgressBarPlaceholder(currentStep: Int) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         repeat(6) { index ->
             Box(
@@ -342,5 +338,4 @@ private fun ProgressBarPlaceholder(currentStep: Int) {
             )
         }
     }
-
 }
