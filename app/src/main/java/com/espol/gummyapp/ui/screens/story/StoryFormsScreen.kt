@@ -172,7 +172,7 @@ fun StoryFormsScreen(
                             .height(56.dp),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Activar piezas allow", fontSize = 20.sp)
+                        Text("Activar piezas", fontSize = 20.sp)
                     }
 
                     Spacer(Modifier.height(24.dp))

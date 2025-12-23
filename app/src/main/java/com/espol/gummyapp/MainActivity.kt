@@ -48,6 +48,9 @@ import com.espol.gummyapp.ui.screens.game.GameModeScreen
 import com.espol.gummyapp.ui.screens.history.HistoryDetailScreen
 import com.espol.gummyapp.ui.screens.history.HistoryListScreen
 import com.espol.gummyapp.ui.screens.home.HomeScreen
+import com.espol.gummyapp.ui.screens.memory.MemoryLoadingScreen
+import com.espol.gummyapp.ui.screens.memory.MemoryPiece
+import com.espol.gummyapp.ui.screens.memory.MemorySequenceScreen
 import com.espol.gummyapp.ui.screens.story.StoryColorsScreen
 import com.espol.gummyapp.ui.screens.story.StoryCombinedScreen
 import com.espol.gummyapp.ui.screens.story.StoryCompletedScreen
@@ -74,6 +77,8 @@ sealed class Screen {
     object StoryColors : Screen()
     object StoryForms : Screen()
     object StoryCombined : Screen()
+    object MemorySequence : Screen()
+    object MemoryLoading : Screen()
     data class StoryCompleted(
         val modeName: String, val totalErrors: Int, val totalTimeSeconds: Int
     ) : Screen()
@@ -131,6 +136,10 @@ fun GummyApp(
     var notifyCharacteristic by remember {
         mutableStateOf<BluetoothGattCharacteristic?>(null)
     }
+
+    var memoryErrors by remember { mutableStateOf(0) }
+    var memoryDuration by remember { mutableStateOf(0) }
+    var memorySequence by remember { mutableStateOf<List<MemoryPiece>>(emptyList()) }
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
     val context = LocalContext.current
@@ -221,6 +230,11 @@ fun GummyApp(
             }
         }
     }
+
+    fun clearBleResponse() {
+        bleResponse = null
+    }
+
 
     fun sendColorToEsp32(color: String) {
         if (writeCharacteristic == null || bluetoothGatt == null) {
@@ -442,7 +456,7 @@ fun GummyApp(
                     currentScreen = Screen.StorySelection
                 },
                     onMemoryClick = {
-                        // más adelante: modo memoria
+                        currentScreen = Screen.MemorySequence
                     },
                     onFreeClick = {
                         // más adelante: modo libre
@@ -573,6 +587,62 @@ fun GummyApp(
                     onInterrupt = {
                         sendColorToEsp32("INTERRUMPIR")
                     })
+
+                Screen.MemorySequence -> MemorySequenceScreen(
+                    isBleConnected = isDeviceConnected,
+                    onSendSequence = { sequence ->
+                        memorySequence = sequence
+                        val payload = "SECUENCIA:" + sequence.joinToString(",") { it.colorCommand }
+                        sendColorToEsp32(payload)
+                        currentScreen = Screen.MemoryLoading
+                    },
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onRecordClick = { currentScreen = Screen.HistoryList },
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onBackClick = { currentScreen = Screen.GameMode },
+                    onCreditsClick = { currentScreen = Screen.Credits },
+                    onCloseApp = { closeApp() })
+
+
+                Screen.MemoryLoading -> MemoryLoadingScreen(
+                    sequence = memorySequence,
+                    bleResponse = bleResponse,
+                    isBleConnected = isDeviceConnected,
+                    onClearBleResponse = { clearBleResponse() },
+                    onFinish = { errors, duration ->
+                        sendColorToEsp32("INTERRUMPIR")
+
+                        memoryErrors = errors
+                        memoryDuration = duration
+
+                        HistoryStorage.saveRecord(
+                            context = context, record = HistoryRecord(
+                                mode = "Memoria",
+                                dateMillis = System.currentTimeMillis(),
+                                durationSeconds = duration,
+                                errors = errors
+                            )
+                        )
+                        currentScreen = Screen.StoryCompleted(
+                            modeName = "Memoria", totalErrors = errors, totalTimeSeconds = duration
+                        )
+                    },
+
+                    onCancel = {
+                        sendColorToEsp32("INTERRUMPIR")
+                        currentScreen = Screen.MemorySequence
+                    },
+                    onBackClick = {
+                        sendColorToEsp32("INTERRUMPIR")
+                        currentScreen = Screen.MemorySequence
+                    },
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onRecordClick = { currentScreen = Screen.HistoryList },
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onInterrupt = {
+                        sendColorToEsp32("INTERRUMPIR")
+                    })
+
 
                 Screen.HistoryList -> HistoryListScreen(
                     isBleConnected = isDeviceConnected,

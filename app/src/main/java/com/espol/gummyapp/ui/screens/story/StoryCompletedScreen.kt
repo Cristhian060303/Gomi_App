@@ -94,7 +94,7 @@ fun StoryCompletedScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Has completado la historia.", fontSize = 18.sp, color = GomiTextPrimary
+                    text = "Has completado el juego.", fontSize = 18.sp, color = GomiTextPrimary
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
