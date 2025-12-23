@@ -3,11 +3,22 @@ package com.espol.gummyapp.ui.screens.story
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,10 +30,6 @@ import com.espol.gummyapp.R
 import com.espol.gummyapp.ui.screens.home.BottomItem
 import com.espol.gummyapp.ui.theme.GomiBackground
 import com.espol.gummyapp.ui.theme.GomiTextPrimary
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import com.espol.gummyapp.ui.history.HistoryRecord
-import com.espol.gummyapp.ui.history.HistoryStorage
 
 
 @Composable
@@ -33,8 +40,12 @@ fun StoryCompletedScreen(
     onHomeClick: () -> Unit,
     onRecordClick: () -> Unit,
     onConnectionClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onInterrupt: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        onInterrupt()
+    }
 
     Box(
         modifier = Modifier
@@ -60,8 +71,7 @@ fun StoryCompletedScreen(
                     contentDescription = "Volver",
                     modifier = Modifier
                         .size(28.dp)
-                        .clickable { onBackClick() }
-                )
+                        .clickable { onBackClick() })
             }
 
             /* 📦 Caja blanca */
@@ -84,9 +94,7 @@ fun StoryCompletedScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Has completado la historia.",
-                    fontSize = 18.sp,
-                    color = GomiTextPrimary
+                    text = "Has completado la historia.", fontSize = 18.sp, color = GomiTextPrimary
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -135,21 +143,15 @@ fun StoryCompletedScreen(
         ) {
 
             BottomItem(
-                icon = R.drawable.ic_home,
-                label = "Inicio",
-                onClick = onHomeClick
+                icon = R.drawable.ic_home, label = "Inicio", onClick = onHomeClick
             )
 
             BottomItem(
-                icon = R.drawable.ic_history,
-                label = "Historial",
-                onClick = onRecordClick
+                icon = R.drawable.ic_history, label = "Historial", onClick = onRecordClick
             )
 
             BottomItem(
-                icon = R.drawable.ic_bluetooth,
-                label = "Conexión",
-                onClick = onConnectionClick
+                icon = R.drawable.ic_bluetooth, label = "Conexión", onClick = onConnectionClick
             )
         }
     }

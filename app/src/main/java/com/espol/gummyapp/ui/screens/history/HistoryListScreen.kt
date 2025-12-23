@@ -276,7 +276,7 @@ fun capitalizeFirstLetter(text: String): String {
 fun HistoryDayGroup(
     day: Int, records: List<HistoryRecord>, onItemClick: (HistoryRecord) -> Unit
 ) {
-    val itemHeight = 44.dp
+    val itemHeight = 48.dp
     val spacing = 8.dp
     val lineHeight = (records.size * itemHeight) + ((records.size - 1).coerceAtLeast(0) * spacing)
 

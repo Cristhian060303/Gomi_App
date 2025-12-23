@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,8 +53,19 @@ fun StoryColorsScreen(
     onHomeClick: () -> Unit,
     onRecordClick: () -> Unit,
     onConnectionClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onInterrupt: () -> Unit
 ) {
+    var hasFinishedStory by remember { mutableStateOf(false) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            if (!hasFinishedStory) {
+                onInterrupt()
+            }
+        }
+    }
+
     var elapsedTime by remember { mutableStateOf(0) }
     var currentStep by remember { mutableStateOf(0) }
     var completedSteps by remember { mutableStateOf(0) }
@@ -276,6 +288,7 @@ fun StoryColorsScreen(
                                 if (currentStep < storySteps.lastIndex) {
                                     currentStep++
                                 } else {
+                                    hasFinishedStory = true
                                     onStoryCompleted(
                                         "Historia Colores", errorCount, elapsedTime
                                     )

@@ -497,7 +497,10 @@ fun GummyApp(
                     onHomeClick = { currentScreen = Screen.Home },
                     onRecordClick = { currentScreen = Screen.HistoryList },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
-                    onBackClick = { currentScreen = Screen.StorySelection })
+                    onBackClick = { currentScreen = Screen.StorySelection },
+                    onInterrupt = {
+                        sendColorToEsp32("INTERRUMPIR")
+                    })
 
                 Screen.StoryForms -> StoryFormsScreen(
                     isBleConnected = isDeviceConnected,
@@ -524,7 +527,10 @@ fun GummyApp(
                     onHomeClick = { currentScreen = Screen.Home },
                     onRecordClick = { currentScreen = Screen.HistoryList },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
-                    onBackClick = { currentScreen = Screen.StorySelection })
+                    onBackClick = { currentScreen = Screen.StorySelection },
+                    onInterrupt = {
+                        sendColorToEsp32("INTERRUMPIR")
+                    })
 
                 Screen.StoryCombined -> StoryCombinedScreen(
                     isBleConnected = isDeviceConnected,
@@ -551,7 +557,10 @@ fun GummyApp(
                     onHomeClick = { currentScreen = Screen.Home },
                     onRecordClick = { currentScreen = Screen.HistoryList },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
-                    onBackClick = { currentScreen = Screen.StorySelection })
+                    onBackClick = { currentScreen = Screen.StorySelection },
+                    onInterrupt = {
+                        sendColorToEsp32("INTERRUMPIR")
+                    })
 
                 is Screen.StoryCompleted -> StoryCompletedScreen(
                     modeName = screen.modeName,
@@ -560,7 +569,10 @@ fun GummyApp(
                     onHomeClick = { currentScreen = Screen.Home },
                     onRecordClick = { currentScreen = Screen.HistoryList },
                     onConnectionClick = { currentScreen = Screen.DeviceScan },
-                    onBackClick = { currentScreen = Screen.Home })
+                    onBackClick = { currentScreen = Screen.Home },
+                    onInterrupt = {
+                        sendColorToEsp32("INTERRUMPIR")
+                    })
 
                 Screen.HistoryList -> HistoryListScreen(
                     isBleConnected = isDeviceConnected,
