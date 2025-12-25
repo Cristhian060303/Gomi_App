@@ -649,7 +649,7 @@ fun GummyApp(
                     onFinish = { errors, duration ->
                         HistoryStorage.saveRecord(
                             context, HistoryRecord(
-                                mode = "Modo Libre",
+                                mode = "Libre",
                                 dateMillis = System.currentTimeMillis(),
                                 durationSeconds = duration,
                                 errors = errors
@@ -657,7 +657,7 @@ fun GummyApp(
                         )
 
                         currentScreen = Screen.StoryCompleted(
-                            modeName = "Modo Libre",
+                            modeName = "Libre",
                             totalErrors = errors,
                             totalTimeSeconds = duration
                         )
