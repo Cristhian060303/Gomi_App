@@ -59,7 +59,6 @@ fun StoryCompletedScreen(
                 .padding(bottom = 80.dp)
         ) {
 
-            /* 🔝 Barra superior (SOLO BACK) */
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -74,7 +73,6 @@ fun StoryCompletedScreen(
                         .clickable { onBackClick() })
             }
 
-            /* 📦 Caja blanca */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,7 +129,6 @@ fun StoryCompletedScreen(
             }
         }
 
-        /* 🔻 Barra inferior */
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

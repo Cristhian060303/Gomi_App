@@ -90,7 +90,6 @@ fun HistoryListScreen(
 
             Column(modifier = Modifier.fillMaxSize()) {
 
-                /* Barra superior */
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -158,7 +157,6 @@ fun HistoryListScreen(
                     }
                 }
 
-                /* Bottom bar */
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -240,7 +238,10 @@ fun HistoryDayItem(
                 .padding(16.dp)
         ) {
             Text(
-                text = record.mode, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = GomiTextPrimary
+                text = record.mode,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = GomiTextPrimary
             )
         }
     }
@@ -288,7 +289,10 @@ fun HistoryDayGroup(
         ) {
 
             Text(
-                text = day.toString(), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = GomiTextPrimary
+                text = day.toString(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = GomiTextPrimary
             )
 
             Spacer(Modifier.height(4.dp))
@@ -303,7 +307,6 @@ fun HistoryDayGroup(
 
         Spacer(Modifier.width(12.dp))
 
-        // REGISTROS
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing), modifier = Modifier.weight(1f)
         ) {
@@ -327,7 +330,10 @@ fun HistoryRecordItem(
             .clickable { onClick() }
             .padding(16.dp)) {
         Text(
-            text = record.mode, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = GomiTextPrimary
+            text = record.mode,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = GomiTextPrimary
         )
     }
 }

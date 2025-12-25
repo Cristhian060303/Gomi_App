@@ -2,7 +2,17 @@ package com.espol.gummyapp.ui.screens.history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -22,14 +32,13 @@ import com.espol.gummyapp.R
 import com.espol.gummyapp.ui.components.SideMenuContent
 import com.espol.gummyapp.ui.history.HistoryRecord
 import com.espol.gummyapp.ui.screens.connection.BottomItem
-import com.espol.gummyapp.ui.screens.home.BottomItem
 import com.espol.gummyapp.ui.theme.GomiBackground
-import com.espol.gummyapp.ui.theme.GomiBackgroundAlt
 import com.espol.gummyapp.ui.theme.GomiPrimary
 import com.espol.gummyapp.ui.theme.GomiTextPrimary
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun HistoryDetailScreen(
@@ -43,15 +52,9 @@ fun HistoryDetailScreen(
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            SideMenuContent(
-                onHelpClick = {},
-                onCreditsClick = {},
-                onCloseClick = {}
-            )
-        }
-    ) {
+        drawerState = drawerState, drawerContent = {
+            SideMenuContent(onHelpClick = {}, onCreditsClick = {}, onCloseClick = {})
+        }) {
 
         Box(
             modifier = Modifier
@@ -61,7 +64,6 @@ fun HistoryDetailScreen(
 
             Column(modifier = Modifier.fillMaxSize()) {
 
-                /* 🔝 Barra superior */
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -75,8 +77,7 @@ fun HistoryDetailScreen(
                         tint = GomiTextPrimary,
                         modifier = Modifier
                             .size(28.dp)
-                            .clickable { onBackClick() }
-                    )
+                            .clickable { onBackClick() })
 
                     Icon(
                         painter = painterResource(id = R.drawable.ic_more_vert),
@@ -86,8 +87,7 @@ fun HistoryDetailScreen(
                             .size(28.dp)
                             .clickable {
                                 scope.launch { drawerState.open() }
-                            }
-                    )
+                            })
                 }
 
                 Text(
@@ -100,7 +100,6 @@ fun HistoryDetailScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                /* 📦 Caja blanca */
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -170,7 +169,6 @@ fun HistoryDetailScreen(
                 }
             }
 
-            /* 🔻 Bottom bar */
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -192,8 +190,7 @@ fun HistoryDetailScreen(
                     icon = R.drawable.ic_history,
                     label = "Historial",
                     selected = true,
-                    onClick = {}
-                )
+                    onClick = {})
 
                 BottomItem(
                     icon = R.drawable.ic_bluetooth,
@@ -205,7 +202,6 @@ fun HistoryDetailScreen(
         }
     }
 }
-
 
 fun formatDate(millis: Long): String {
     val sdf = SimpleDateFormat("EEEE, d 'de' MMM", Locale("es"))

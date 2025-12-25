@@ -63,7 +63,6 @@ fun MemoryLoadingScreen(
     val startTime = remember { System.currentTimeMillis() }
     var completedCount by remember { mutableStateOf(0) }
 
-    /* Escuchar BLE */
     LaunchedEffect(bleResponse) {
         when (bleResponse) {
             "CORRECTO" -> {
@@ -79,7 +78,6 @@ fun MemoryLoadingScreen(
             }
         }
 
-        // PROTECCIÓN CONTRA DOBLE EJECUCIÓN
         if (!finished && completedCount == sequence.size) {
             finished = true
 
@@ -103,7 +101,6 @@ fun MemoryLoadingScreen(
                 .padding(16.dp)
         ) {
 
-            /* TOP BAR (solo back) */
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
@@ -117,7 +114,6 @@ fun MemoryLoadingScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* 📦 CAJA 1 — TÍTULO */
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,7 +131,6 @@ fun MemoryLoadingScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* CAJA 2 — LOADING */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -161,7 +156,6 @@ fun MemoryLoadingScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* CAJA 3 — PROGRESO + CANCELAR */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -201,7 +195,6 @@ fun MemoryLoadingScreen(
             }
         }
 
-        /* BOTTOM BAR */
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

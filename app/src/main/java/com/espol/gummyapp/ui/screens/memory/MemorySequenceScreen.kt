@@ -98,7 +98,6 @@ fun MemorySequenceScreen(
                     .padding(bottom = 80.dp)
             ) {
 
-                /* 🔝 TOP BAR */
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -123,7 +122,6 @@ fun MemorySequenceScreen(
                             .clickable { scope.launch { drawerState.open() } })
                 }
 
-                /* 📦 WHITE BOX */
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -184,7 +182,6 @@ fun MemorySequenceScreen(
                 }
             }
 
-            /* 🔻 BOTTOM BAR */
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -224,8 +221,6 @@ fun MemorySequenceScreen(
         }
     }
 }
-
-/* -------------------- ROW -------------------- */
 
 @Composable
 private fun MemoryPieceRow(

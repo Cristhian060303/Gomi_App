@@ -16,10 +16,8 @@ object HistoryStorage {
         records.add(record)
 
         val json = gson.toJson(records)
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putString(KEY_RECORDS, json)
-            .apply()
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+            .putString(KEY_RECORDS, json).apply()
     }
 
     fun getRecords(context: Context): List<HistoryRecord> {

@@ -107,7 +107,6 @@ fun StoryFormsScreen(
                 .padding(bottom = 80.dp)
         ) {
 
-            /* 🔝 Barra superior */
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,7 +121,6 @@ fun StoryFormsScreen(
                         .clickable { onBackClick() })
             }
 
-            /* Caja principal */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -181,7 +179,6 @@ fun StoryFormsScreen(
             }
         }
 
-        /* Bottom bar */
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -209,7 +206,6 @@ fun StoryFormsScreen(
             }
         }
 
-        /* Diálogo */
         if (showDialog) {
             StoryResultDialog(
                 isLoading = isLoading,

@@ -53,8 +53,6 @@ fun FreeModeScreen(
     onConnectionClick: () -> Unit,
     onInterrupt: () -> Unit
 ) {
-
-    // 🔥 Al salir SIEMPRE interrumpir
     DisposableEffect(Unit) {
         onDispose {
             onInterrupt()
@@ -66,7 +64,6 @@ fun FreeModeScreen(
     var finished by remember { mutableStateOf(false) }
     val startTime = remember { System.currentTimeMillis() }
 
-    /* 🔁 BLE */
     LaunchedEffect(bleResponse) {
         when (bleResponse) {
 
@@ -117,7 +114,6 @@ fun FreeModeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* 📦 CAJA 1 — TÍTULO */
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,7 +131,6 @@ fun FreeModeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* 📦 CAJA 2 — LOADING */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -161,7 +156,6 @@ fun FreeModeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* 📦 CAJA 3 — PROGRESO */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -203,7 +197,6 @@ fun FreeModeScreen(
             }
         }
 
-        /* 🔻 BOTTOM BAR */
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -241,7 +234,6 @@ fun FreeModeScreen(
     }
 }
 
-/* 🔁 MAPEO COLOR → PIEZA */
 private fun colorToPieceId(color: String?): String? = when (color) {
     "MORADO" -> "head"
     "AMARILLO" -> "tail"

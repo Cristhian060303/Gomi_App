@@ -12,43 +12,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
-    primary = GomiPrimary,
-    onPrimary = Color.White,
+    primary = GomiPrimary, onPrimary = Color.White,
 
-    secondary = GomiGreen,
-    onSecondary = Color.White,
+    secondary = GomiGreen, onSecondary = Color.White,
 
-    tertiary = GomiPrimaryLight,
-    onTertiary = GomiTextPrimary,
+    tertiary = GomiPrimaryLight, onTertiary = GomiTextPrimary,
 
-    background = GomiBackground,
-    onBackground = GomiTextPrimary,
+    background = GomiBackground, onBackground = GomiTextPrimary,
 
-    surface = GomiBackgroundAlt,
-    onSurface = GomiTextPrimary,
+    surface = GomiBackgroundAlt, onSurface = GomiTextPrimary,
 
-    error = GomiError,
-    onError = Color.White
+    error = GomiError, onError = Color.White
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GomiPrimary,
-    onPrimary = Color.White,
+    primary = GomiPrimary, onPrimary = Color.White,
 
-    secondary = GomiGreen,
-    onSecondary = Color.White,
+    secondary = GomiGreen, onSecondary = Color.White,
 
-    tertiary = GomiPrimaryLight,
-    onTertiary = GomiTextPrimary,
+    tertiary = GomiPrimaryLight, onTertiary = GomiTextPrimary,
 
-    background = Color(0xFF1B1B2F),
-    onBackground = Color.White,
+    background = Color(0xFF1B1B2F), onBackground = Color.White,
 
-    surface = Color(0xFF2A2A40),
-    onSurface = Color.White,
+    surface = Color(0xFF2A2A40), onSurface = Color.White,
 
-    error = GomiError,
-    onError = Color.White
+    error = GomiError, onError = Color.White
 )
 
 @Composable
@@ -63,13 +51,12 @@ fun GummyAppTheme(
             if (darkTheme) dynamicDarkColorScheme(context)
             else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+        colorScheme = colorScheme, typography = Typography, content = content
     )
 }

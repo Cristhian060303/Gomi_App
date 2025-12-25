@@ -9,30 +9,17 @@ import androidx.compose.ui.unit.sp
 import com.espol.gummyapp.R
 
 val Nunito = FontFamily(
-    Font(R.font.nunito_semibold, FontWeight.SemiBold),
-    Font(R.font.nunito_bold, FontWeight.Bold)
+    Font(R.font.nunito_semibold, FontWeight.SemiBold), Font(R.font.nunito_bold, FontWeight.Bold)
 )
 
 val Typography = Typography(
     headlineLarge = TextStyle(
-        fontFamily = Nunito,
-        fontWeight = FontWeight.Bold,
-        fontSize = 40.sp,
-        lineHeight = 48.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = Nunito,
-        fontWeight = FontWeight.Bold,
-        fontSize = 24.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = Nunito,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp
-    ),
-    labelLarge = TextStyle(
-        fontFamily = Nunito,
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp
+        fontFamily = Nunito, fontWeight = FontWeight.Bold, fontSize = 40.sp, lineHeight = 48.sp
+    ), titleLarge = TextStyle(
+        fontFamily = Nunito, fontWeight = FontWeight.Bold, fontSize = 24.sp
+    ), bodyLarge = TextStyle(
+        fontFamily = Nunito, fontWeight = FontWeight.SemiBold, fontSize = 18.sp
+    ), labelLarge = TextStyle(
+        fontFamily = Nunito, fontWeight = FontWeight.Bold, fontSize = 16.sp
     )
 )

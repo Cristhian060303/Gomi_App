@@ -64,7 +64,6 @@ fun GameModeScreen(
                 .background(GomiBackground)
         ) {
 
-            // 🔝 Barra superior
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -90,7 +89,6 @@ fun GameModeScreen(
                         })
             }
 
-            // 🎮 Contenido central
             Column(
                 modifier = Modifier
                     .fillMaxSize()

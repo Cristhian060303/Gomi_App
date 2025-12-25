@@ -62,7 +62,6 @@ import com.espol.gummyapp.ui.screens.welcome.WelcomeScreen
 import com.espol.gummyapp.ui.theme.GummyAppTheme
 import java.util.UUID
 
-// --- CONFIGURACION BLE ---
 val SERVICE_UUID: UUID = UUID.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
 
 val CHARACTERISTIC_WRITE_UUID: UUID = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
@@ -128,11 +127,9 @@ fun GummyApp(
     onRequestEnableBluetooth: () -> Unit, onOpenLocationSettings: () -> Unit
 ) {
 
-    // --- ESTADO BLE ---
     var bluetoothGatt by remember { mutableStateOf<BluetoothGatt?>(null) }
     var bleResponse by remember { mutableStateOf<String?>(null) }
 
-    // Características BLE
     var writeCharacteristic by remember {
         mutableStateOf<BluetoothGattCharacteristic?>(null)
     }
@@ -281,7 +278,6 @@ fun GummyApp(
         }
     }
 
-    // Escucha cambios reales del Bluetooth del sistema
     DisposableEffect(Unit) {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(c: Context, intent: Intent) {
@@ -301,7 +297,6 @@ fun GummyApp(
         }
     }
 
-    // Permisos
     val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         arrayOf(
             Manifest.permission.BLUETOOTH_SCAN,
@@ -335,7 +330,6 @@ fun GummyApp(
         if (!hasPermissions) permissionLauncher.launch(permissions)
     }
 
-    // BLE Scan callback
     val scanCallback = remember {
         object : android.bluetooth.le.ScanCallback() {
             override fun onScanResult(
@@ -351,7 +345,6 @@ fun GummyApp(
         }
     }
 
-    // Control de escaneo
     LaunchedEffect(currentScreen, isBluetoothEnabled, hasPermissions) {
         val shouldScan = currentScreen is Screen.DeviceScan && isBluetoothEnabled && hasPermissions
 

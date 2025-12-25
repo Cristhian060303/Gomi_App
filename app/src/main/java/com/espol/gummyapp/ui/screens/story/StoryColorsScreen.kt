@@ -118,7 +118,6 @@ fun StoryColorsScreen(
                 .padding(bottom = 80.dp)
         ) {
 
-            /* 🔝 Barra superior */
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -134,7 +133,6 @@ fun StoryColorsScreen(
                         .clickable { onBackClick() })
             }
 
-            /* 📦 Caja blanca principal */
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -143,7 +141,6 @@ fun StoryColorsScreen(
                     .padding(20.dp)
             ) {
 
-                /* 🟪 Caja 1 – Título */
                 Box(
                     modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
                 ) {
@@ -159,7 +156,6 @@ fun StoryColorsScreen(
                 DividerGomi()
                 Spacer(modifier = Modifier.height(20.dp))
 
-                /* 🟪 Caja 2 – Texto historia (placeholder) */
                 Text(
                     text = storySteps[currentStep].text, fontSize = 18.sp, color = GomiTextPrimary
                 )
@@ -168,7 +164,6 @@ fun StoryColorsScreen(
                 DividerGomi()
                 Spacer(modifier = Modifier.height(20.dp))
 
-                /* 🟪 Caja 3 – Botón + progreso */
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()

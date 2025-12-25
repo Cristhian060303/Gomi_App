@@ -69,7 +69,6 @@ fun StorySelectionScreen(
 
             Column(modifier = Modifier.fillMaxSize()) {
 
-                // 🔝 Barra superior
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

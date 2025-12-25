@@ -61,9 +61,7 @@ fun ConnectionScreen(
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
             SideMenuContent(
-                onHelpClick = { },
-                onCreditsClick = onCreditsClick,
-                onCloseClick = onCloseApp
+                onHelpClick = { }, onCreditsClick = onCreditsClick, onCloseClick = onCloseApp
             )
         }) {
 
