@@ -44,6 +44,7 @@ import com.espol.gummyapp.ui.screens.connection.BleDevice
 import com.espol.gummyapp.ui.screens.connection.ConnectionScreen
 import com.espol.gummyapp.ui.screens.connection.DeviceConnectionState
 import com.espol.gummyapp.ui.screens.credits.CreditsScreen
+import com.espol.gummyapp.ui.screens.free.FreeModeScreen
 import com.espol.gummyapp.ui.screens.game.GameModeScreen
 import com.espol.gummyapp.ui.screens.history.HistoryDetailScreen
 import com.espol.gummyapp.ui.screens.history.HistoryListScreen
@@ -51,6 +52,7 @@ import com.espol.gummyapp.ui.screens.home.HomeScreen
 import com.espol.gummyapp.ui.screens.memory.MemoryLoadingScreen
 import com.espol.gummyapp.ui.screens.memory.MemoryPiece
 import com.espol.gummyapp.ui.screens.memory.MemorySequenceScreen
+import com.espol.gummyapp.ui.screens.memory.memoryPieces
 import com.espol.gummyapp.ui.screens.story.StoryColorsScreen
 import com.espol.gummyapp.ui.screens.story.StoryCombinedScreen
 import com.espol.gummyapp.ui.screens.story.StoryCompletedScreen
@@ -79,6 +81,7 @@ sealed class Screen {
     object StoryCombined : Screen()
     object MemorySequence : Screen()
     object MemoryLoading : Screen()
+    object FreeMode : Screen()
     data class StoryCompleted(
         val modeName: String, val totalErrors: Int, val totalTimeSeconds: Int
     ) : Screen()
@@ -459,7 +462,8 @@ fun GummyApp(
                         currentScreen = Screen.MemorySequence
                     },
                     onFreeClick = {
-                        // más adelante: modo libre
+                        sendColorToEsp32("LIBRE")
+                        currentScreen = Screen.FreeMode
                     },
                     onHomeClick = {
                         currentScreen = Screen.Home
@@ -643,6 +647,37 @@ fun GummyApp(
                         sendColorToEsp32("INTERRUMPIR")
                     })
 
+                Screen.FreeMode -> FreeModeScreen(
+                    pieces = memoryPieces,
+                    bleResponse = bleResponse,
+                    isBleConnected = isDeviceConnected,
+                    onClearBleResponse = { clearBleResponse() },
+
+                    onFinish = { errors, duration ->
+                        HistoryStorage.saveRecord(
+                            context, HistoryRecord(
+                                mode = "Modo Libre",
+                                dateMillis = System.currentTimeMillis(),
+                                durationSeconds = duration,
+                                errors = errors
+                            )
+                        )
+
+                        currentScreen = Screen.StoryCompleted(
+                            modeName = "Modo Libre",
+                            totalErrors = errors,
+                            totalTimeSeconds = duration
+                        )
+                    },
+
+                    onCancel = { currentScreen = Screen.GameMode },
+                    onBackClick = { currentScreen = Screen.GameMode },
+                    onHomeClick = { currentScreen = Screen.Home },
+                    onRecordClick = { currentScreen = Screen.HistoryList },
+                    onConnectionClick = { currentScreen = Screen.DeviceScan },
+                    onInterrupt = {
+                        sendColorToEsp32("INTERRUMPIR")
+                    })
 
                 Screen.HistoryList -> HistoryListScreen(
                     isBleConnected = isDeviceConnected,

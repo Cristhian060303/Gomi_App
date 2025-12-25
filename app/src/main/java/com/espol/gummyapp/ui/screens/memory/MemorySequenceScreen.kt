@@ -46,17 +46,6 @@ import com.espol.gummyapp.ui.theme.GomiBackgroundAlt
 import com.espol.gummyapp.ui.theme.GomiTextPrimary
 import kotlinx.coroutines.launch
 
-/* -------------------- DATA -------------------- */
-private val memoryPiecesInitial = listOf(
-    MemoryPiece("head", "Cabeza", "MORADO", R.drawable.ic_head),
-    MemoryPiece("tail", "Cola", "AMARILLO", R.drawable.ic_tail),
-    MemoryPiece("blue_leg", "Pata azul", "CELESTE", R.drawable.ic_blue_leg),
-    MemoryPiece("orange_leg", "Pata naranja", "NARANJA", R.drawable.ic_orange_leg),
-    MemoryPiece("pink_leg", "Pata rosada", "ROSA", R.drawable.ic_pink_leg),
-    MemoryPiece("green_leg", "Pata verde", "VERDE", R.drawable.ic_green_leg),
-)
-
-/* -------------------- SCREEN -------------------- */
 
 @Composable
 fun MemorySequenceScreen(
@@ -69,7 +58,7 @@ fun MemorySequenceScreen(
     onCreditsClick: () -> Unit,
     onCloseApp: () -> Unit
 ) {
-    var pieces by remember { mutableStateOf(memoryPiecesInitial) }
+    var pieces by remember { mutableStateOf(memoryPieces) }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
