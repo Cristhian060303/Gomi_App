@@ -165,7 +165,7 @@ fun FreeModeScreen(
             ) {
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     pieces.forEach { piece ->
