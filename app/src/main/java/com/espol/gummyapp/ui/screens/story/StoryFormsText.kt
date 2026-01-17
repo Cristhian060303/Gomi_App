@@ -9,13 +9,13 @@ val storyFormsSteps = listOf(
         "MORADO",
         "Un día, Gommy quería una naranja, redonda y bonita… ¡como la luna llena!\n" + "\"Esa forma es un círculo\", dijo con brillo en los ojos.\n" + "¿Dónde está el círculo?"
     ), StoryFormStep(
-        "ROSA",
+        "VERDE",
         "Luego vio una montaña alta y puntiaguda, con forma de triángulo.\n" + "¡Qué forma tan aguda!\n" + "\"Yo quiero un triángulo\", dijo con encanto.\n" + "¿Dónde está el triángulo?"
     ), StoryFormStep(
         "CELESTE",
         "Después vio una sandía larga y genial, con forma de óvalo.\n" + "¡Ayúdalo a encontrarla!\n" + "\"¿Dónde está mi óvalo?\", preguntó contento."
     ), StoryFormStep(
-        "VERDE",
+        "ROSA",
         "Gommy estaba feliz y dibujó un corazón,\n" + "una forma bonita y llena de emoción.\n" + "¿Puedes encontrar un corazón?"
     ), StoryFormStep(
         "NARANJA",
